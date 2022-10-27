@@ -1,0 +1,173 @@
+-- Physic Model-NutriGo!
+-- tables
+-- Table: Categoria
+
+CREATE TABLE Categoria (
+    idCategoria int  NOT NULL,
+    nombreCategoria varchar(50)  NOT NULL,
+    descripcion varchar(50)  NOT NULL,
+    CONSTRAINT Categoria_pk PRIMARY KEY  (idCategoria)
+);
+
+-- Table: Localizacion
+CREATE TABLE Localizacion (
+    idLocalizacion int  NOT NULL,
+    país varchar(50)  NOT NULL,
+    region varchar(50)  NOT NULL,
+    distrito varchar(50)  NOT NULL,
+    codigoPostal int  NOT NULL,
+    nombreCalle varchar(50)  NOT NULL,
+    numCalle int  NOT NULL,
+    CONSTRAINT Localizacion_pk PRIMARY KEY  (idLocalizacion)
+);
+
+-- Table: Orden
+CREATE TABLE Orden (
+    idOrden int  NOT NULL,
+    idConsumidor int  NOT NULL,
+    idRepartidor int  NOT NULL,
+    fechaOrden datetime  NOT NULL,
+    medioDePago varchar(50)  NOT NULL,
+    CONSTRAINT Orden_pk PRIMARY KEY  (idOrden)
+);
+
+-- Table: OrdenDetalles
+CREATE TABLE OrdenDetalles (
+    idOrden int  NOT NULL,
+    idProducto int  NOT NULL,
+    descuento int  NOT NULL,
+    cantidadProducto int  NOT NULL,
+    precioTotal money  NOT NULL,
+    CONSTRAINT OrdenDetalles_pk PRIMARY KEY  (idOrden,idProducto)
+);
+
+-- Table: Producto
+CREATE TABLE Producto (
+    idProducto int  NOT NULL,
+    idCategoria int  NOT NULL,
+    idEmpresa int  NOT NULL,
+    idValorNutricional int  NOT NULL,
+    nombreProducto int  NOT NULL,
+    precioUnitario money  NOT NULL,
+    stock int  NOT NULL,
+    CONSTRAINT Producto_pk PRIMARY KEY  (idProducto)
+);
+
+-- Table: Repartidor
+CREATE TABLE Repartidor (
+    idRepartidor int  NOT NULL,
+    idTransporte int  NOT NULL,
+    nombreRepartidor varchar(50)  NOT NULL,
+    telefonoRepartidor int  NOT NULL,
+    promedioValoracion int  NOT NULL,
+    CONSTRAINT Repartidor_pk PRIMARY KEY  (idRepartidor)
+);
+
+-- Table: Sucursal
+CREATE TABLE Sucursal (
+    idLocalizacion int  NOT NULL,
+    idEmpresa int  NOT NULL,
+    CONSTRAINT Sucursal_pk PRIMARY KEY  (idLocalizacion,idEmpresa)
+);
+
+-- Table: Transporte
+CREATE TABLE Transporte (
+    idTransporte int  NOT NULL,
+    tipoTransporte varchar(50)  NOT NULL,
+    estado varchar(50)  NOT NULL,
+    capacidad int  NOT NULL,
+    CONSTRAINT Transporte_pk PRIMARY KEY  (idTransporte)
+);
+
+-- Table: UsuarioConsumidor
+CREATE TABLE UsuarioConsumidor (
+    idConsumidor int  NOT NULL,
+    idLocalizacion int  NOT NULL,
+    nombreConsumidor varchar(50)  NOT NULL,
+    telefonoConsumidor int  NOT NULL,
+    añoNacimiento date  NOT NULL,
+    email nvarchar(55)  NOT NULL,
+    contraseña nvarchar(50)  NOT NULL,
+    CONSTRAINT UsuarioConsumidor_pk PRIMARY KEY  (idConsumidor)
+);
+
+-- Table: UsuarioEmpresa
+CREATE TABLE UsuarioEmpresa (
+    idEmpresa int  NOT NULL,
+    nombreEmpresa varchar(50)  NOT NULL,
+    razonSocial varchar(50)  NOT NULL,
+    telefonoEmpresa int  NOT NULL,
+    email varchar(50)  NOT NULL,
+    contraseña nvarchar(50)  NOT NULL,
+    CONSTRAINT UsuarioEmpresa_pk PRIMARY KEY  (idEmpresa)
+);
+
+-- Table: ValorNutricional
+CREATE TABLE ValorNutricional (
+    idValorNutricional int  NOT NULL,
+    calorias int  NOT NULL,
+    proteinas int  NOT NULL,
+    carbohidratos int  NOT NULL,
+    grasas int  NOT NULL,
+    vitaminas nvarchar(100)  NOT NULL,
+    minerales nvarchar(100)  NOT NULL,
+    CONSTRAINT ValorNutricional_pk PRIMARY KEY  (idValorNutricional)
+);
+
+-- foreign keys
+-- Reference: Orden_Motorizados (table: Orden)
+ALTER TABLE Orden ADD CONSTRAINT Orden_Motorizados
+    FOREIGN KEY (idRepartidor)
+    REFERENCES Repartidor (idRepartidor);
+
+-- Reference: Orden_Productos_Orden (table: OrdenDetalles)
+ALTER TABLE OrdenDetalles ADD CONSTRAINT Orden_Productos_Orden
+    FOREIGN KEY (idOrden)
+    REFERENCES Orden (idOrden);
+
+-- Reference: Orden_Productos_Producto (table: OrdenDetalles)
+ALTER TABLE OrdenDetalles ADD CONSTRAINT Orden_Productos_Producto
+    FOREIGN KEY (idProducto)
+    REFERENCES Producto (idProducto);
+
+-- Reference: Orden_Usuario_Cliente (table: Orden)
+ALTER TABLE Orden ADD CONSTRAINT Orden_Usuario_Cliente
+    FOREIGN KEY (idConsumidor)
+    REFERENCES UsuarioConsumidor (idConsumidor);
+
+-- Reference: Producto_Categoria (table: Producto)
+ALTER TABLE Producto ADD CONSTRAINT Producto_Categoria
+    FOREIGN KEY (idCategoria)
+    REFERENCES Categoria (idCategoria);
+
+-- Reference: Producto_Usuario_Empresa (table: Producto)
+ALTER TABLE Producto ADD CONSTRAINT Producto_Usuario_Empresa
+    FOREIGN KEY (idEmpresa)
+    REFERENCES UsuarioEmpresa (idEmpresa);
+
+-- Reference: Producto_Valor_Nutricional (table: Producto)
+ALTER TABLE Producto ADD CONSTRAINT Producto_Valor_Nutricional
+    FOREIGN KEY (idValorNutricional)
+    REFERENCES ValorNutricional (idValorNutricional);
+
+-- Reference: Repartidor_Transporte (table: Repartidor)
+ALTER TABLE Repartidor ADD CONSTRAINT Repartidor_Transporte
+    FOREIGN KEY (idTransporte)
+    REFERENCES Transporte (idTransporte);
+
+-- Reference: Sucursal_Localizacion (table: Sucursal)
+ALTER TABLE Sucursal ADD CONSTRAINT Sucursal_Localizacion
+    FOREIGN KEY (idLocalizacion)
+    REFERENCES Localizacion (idLocalizacion);
+
+-- Reference: Sucursal_Usuario_Empresa (table: Sucursal)
+ALTER TABLE Sucursal ADD CONSTRAINT Sucursal_Usuario_Empresa
+    FOREIGN KEY (idEmpresa)
+    REFERENCES UsuarioEmpresa (idEmpresa);
+
+-- Reference: UsuarioCliente_Localizacion (table: UsuarioConsumidor)
+ALTER TABLE UsuarioConsumidor ADD CONSTRAINT UsuarioCliente_Localizacion
+    FOREIGN KEY (idLocalizacion)
+    REFERENCES Localizacion (idLocalizacion);
+
+-- End of file.
